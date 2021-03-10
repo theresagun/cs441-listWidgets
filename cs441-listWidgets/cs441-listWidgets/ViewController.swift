@@ -11,8 +11,12 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
 
     @IBOutlet var tableView: UITableView!
     @IBOutlet var textfield: UITextField!
+    @IBOutlet var pricefield: UITextField!
+    @IBOutlet var totalItems: UILabel!
+    @IBOutlet var totalPrice: UILabel!
     
     let items = NSMutableArray()
+    var prices: [Double] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,8 +25,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.delegate = self
             
         //default values in list, maybe change/remove
-        items.add("Apple")
+        items.add("Apples")
+        prices.append(4)
         items.add("Banana")
+        prices.append(2.50)
+        
+        totalItems.text = String(items.count)
+        let p = "$" + String(prices.reduce(0,+))
+        totalPrice.text = p
         
         tableView.reloadData()
     }
@@ -38,14 +48,35 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if cell == nil {
             cell = UITableViewCell.init()
         }
-        cell?.textLabel?.text = (items[Int(indexPath.row)] as! String)
+        var setText = (items[Int(indexPath.row)] as! String)
+        setText.append(", $")
+        setText.append(String(prices[Int(indexPath.row)]))
+        cell?.textLabel?.text = setText
+
         return cell!
+    }
+    
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.setEditing(true, animated: true)
     }
     
     @IBAction func addItem(button: UIButton){
         let s = textfield.text
+        let price = Double(pricefield.text!)!
         items.add(s)
+        prices.append(price)
         textfield.text = ""
+        pricefield.text = ""
+        
+        totalItems.text = String(items.count)
+        let p = "$" + String(prices.reduce(0,+))
+        totalPrice.text = p
+       
+        
         tableView.reloadData()
     }
 
