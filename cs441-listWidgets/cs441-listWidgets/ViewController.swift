@@ -17,19 +17,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     var items: [String] = []
     var prices: [Double] = []
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         tableView.dataSource = self
         tableView.delegate = self
-            
-        //default values in list, maybe change/remove
-        items.append("Apples")
-        prices.append(4)
-        items.append("Banana")
-        prices.append(2.50)
-        
+        //swipe to delete
+        self.navigationItem.rightBarButtonItem = self.editButtonItem
+
         reloadScreen()
         tableView.reloadData()
     }
@@ -47,21 +43,15 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         setText.append(", $")
         setText.append(String(prices[Int(indexPath.row)]))
         cell?.textLabel?.text = setText
-
         return cell!
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.setEditing(true, animated: true)
-    }
-
-    
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-                items.remove(at: indexPath.row)
-                prices.remove(at: indexPath.row)
-                tableView.deleteRows(at: [indexPath], with: .fade)
-                reloadScreen()
+            items.remove(at: indexPath.row)
+            prices.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            reloadScreen()
             }
     }
     
@@ -73,9 +63,9 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     @IBAction func addItem(button: UIButton){
         let s = textfield.text
-        let price = Double(pricefield.text!)!
+        let price = Double(pricefield.text ?? "0.0")
         items.append(String(s!))
-        prices.append(price)
+        prices.append(price ?? 0.0)
         textfield.text = ""
         pricefield.text = ""
         
