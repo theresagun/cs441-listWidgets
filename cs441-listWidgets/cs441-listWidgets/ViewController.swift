@@ -57,15 +57,18 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     
     func reloadScreen(){
         totalItems.text = String(items.count)
-        let p = "$" + String(prices.reduce(0,+))
-        totalPrice.text = p
+        let p = prices.reduce(0,+)
+        let pRound = Double(round(100*p)/100)
+        let price = "$" + String(pRound)
+        totalPrice.text = price
     }
     
     @IBAction func addItem(button: UIButton){
         let s = textfield.text
-        let price = Double(pricefield.text ?? "0.0")
+        let price = Double(pricefield.text ?? "0.0") ?? 0.0
+        let priceRound = Double(round(100*price)/100)
         items.append(String(s!))
-        prices.append(price ?? 0.0)
+        prices.append(priceRound)
         textfield.text = ""
         pricefield.text = ""
         
