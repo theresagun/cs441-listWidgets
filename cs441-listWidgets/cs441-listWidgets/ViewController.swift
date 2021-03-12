@@ -15,7 +15,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     @IBOutlet var totalItems: UILabel!
     @IBOutlet var totalPrice: UILabel!
     
-    let items = NSMutableArray()
+    var items: [String] = []
     var prices: [Double] = []
     
     override func viewDidLoad() {
@@ -25,21 +25,16 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         tableView.delegate = self
             
         //default values in list, maybe change/remove
-        items.add("Apples")
+        items.append("Apples")
         prices.append(4)
-        items.add("Banana")
+        items.append("Banana")
         prices.append(2.50)
         
-        totalItems.text = String(items.count)
-        let p = "$" + String(prices.reduce(0,+))
-        totalPrice.text = p
-        
+        reloadScreen()
         tableView.reloadData()
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //if we have an array, return the size of the array items.count
-        //lazy way:
         return items.count
     }
     
@@ -48,7 +43,7 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         if cell == nil {
             cell = UITableViewCell.init()
         }
-        var setText = (items[Int(indexPath.row)] as! String)
+        var setText = (String(items[Int(indexPath.row)]))
         setText.append(", $")
         setText.append(String(prices[Int(indexPath.row)]))
         cell?.textLabel?.text = setText
@@ -56,27 +51,35 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         return cell!
     }
     
-    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        return true
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.setEditing(true, animated: true)
+    }
+
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+                items.remove(at: indexPath.row)
+                prices.remove(at: indexPath.row)
+                tableView.deleteRows(at: [indexPath], with: .fade)
+                reloadScreen()
+            }
+    }
+    
+    func reloadScreen(){
+        totalItems.text = String(items.count)
+        let p = "$" + String(prices.reduce(0,+))
+        totalPrice.text = p
     }
     
     @IBAction func addItem(button: UIButton){
         let s = textfield.text
         let price = Double(pricefield.text!)!
-        items.add(s)
+        items.append(String(s!))
         prices.append(price)
         textfield.text = ""
         pricefield.text = ""
         
-        totalItems.text = String(items.count)
-        let p = "$" + String(prices.reduce(0,+))
-        totalPrice.text = p
-       
-        
+        reloadScreen()
         tableView.reloadData()
     }
 
